@@ -1,0 +1,4 @@
+"..\i2c_eeprom.c" -E -c --cpu Cortex-M0 -D__MICROLIB -O2 --apcs=interwork --split_sections -I..\..\Library\Device\Nuvoton\M051Series\Include -I..\..\Library\CMSIS\Include -I..\..\Library\StdDriver\inc 
+-I C:\KeilMDK\ARM\RV31\INC 
+-I C:\KeilMDK\ARM\CMSIS\Include 
+-o ".\lst\i2c_eeprom.i"

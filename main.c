@@ -23,25 +23,24 @@
 #define PLL_CLOCK           50000000
 //#define _LTC2328_
 #define RXBUFSIZE 64//1024
-//#define Channel 16//1024
+#define Channel 16//1024
 //define channel_16 1
 //#define channel_4 1
 //#define LCM_W12864S
 //#define _ADS8887_
-////////////////////////////////////////////4/16CHANNEL UART CALLBACK DEF
 #ifndef channel_16
 #define channel_16
 #else
 #define channel_4
 #endif
-//////////////////////////////////////////////
+
 #define _ADS8320_
 //#define _DAC714_
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables                                                                                        */
 /*---------------------------------------------------------------------------------------------------------*/
 float gain_uiAdc8320Value_stain_e,previous_sumdata,previous_4_times_data_mean[16]={0},coef_a,coef_b,coef_c,coef_d,coef_e=1,coef_f;
-uint8_t AC_counter,g_uEint0_Scan_Event_Flag,g_uEint0_Save_Event_Flag,unit_counter,monitor_enable;
+uint8_t AC_counter,g_uEint0_Scan_Event_Flag,g_uEint0_Save_Event_Flag,unit_counter;
 uint8_t	gucOutputVoltageType,gucOutputVoltagePeak,counter_a=0,algorithm_open,wakeup,wake_count=0;
 float uiAdc8320Value_Hz,gain_uiAdc8320Value,uiAdc8320Value_f,uiAdc8320Value_ac,uiAdc8320Value_f_offset,uiAdc8320Value_Hz_1,gain_uiAdc8320Value_f3,after_algorithm_value,DG_value;
 // gain table
@@ -1046,7 +1045,7 @@ void read_save_eeprom_address(void)
 //---------------------------------------------------------------
 #define PAGE_SIZE_OF_EEPROM										256// page size
 #define TOTAL_SIZE_OF_EEPROM									(256*1023)// all block size
-#define DATA_SIZE_OF_EEPROM										(TOTAL_SIZE_OF_EEPROM-PAGE_SIZE_OF_EEPROM)//é€ç·‡î˜î˜–
+#define DATA_SIZE_OF_EEPROM										(TOTAL_SIZE_OF_EEPROM-PAGE_SIZE_OF_EEPROM)//³Ñ¾l¤j¤p
 //
 #ifdef channel_16
 #define ONE_COMMAND_DATA_SIZE									256 							//data_size
@@ -1090,7 +1089,7 @@ void save_measured_data_to_eeprom(void)//every cycle measured data save it  ,dat
 		write_save_eeprom_address();//0x0041
 }						
 
-void read_measured_data_from_eeprom(void)///////every time read it from eeprom is page0 to last page at last time measure//æŒã„§Î‘çˆ¹ç§†
+void read_measured_data_from_eeprom(void)///////every time read it from eeprom is page0 to last page at last time measure//°Æ¨ç¦¡µù¸Ñ
 {		
 		uint32_t u32_address;
 	Measured_Data_Type union_One_Measured_Data;
@@ -1121,21 +1120,21 @@ void read_measured_data_from_eeprom(void)///////every time read it from eeprom i
 }
 /**************************************************************************************************************FFT_test/////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define N           128 
-#define POWER       6	//?î…î™”îŒî—¬?î—°?èª¹î„³îƒç †î ‚î˜î€™î„¸?î“‡î ‚î˜î„¸??2^POWER 
-#define P_COEF      8	//?î…î™”îŒî—¬è‡‚?î›ƒî˜’ç †î ‚î˜î€™î„¸?î“‡î ‚î˜î„¸??2^POWER 
-#if (N == 4) #define L           2//Lî€™ï¹š??Ã¬L = log2(N) 
-#elif (N == 8) #define L           3//Lî€™ï¹š??Ã¬L = log2(N) 
-#elif (N == 16) #define L           4//Lî€™ï¹š??Ã¬L = log2(N) 
-#elif (N == 32) #define L           5//Lî€™ï¹š??Ã¬L = log2(N) 
-#elif (N == 64) #define L           6//Lî€™ï¹š??Ã¬L = log2(N) 
-#elif (N == 128) #define L           7//Lî€™ï¹š??Ã¬L = log2(N)
-#endif   //ADî•?î”??12î”î“‡ã‚»î™¯î™î•ãƒs16 x[N]ï¹š??èª¹î€¤?î“‡îçŒ?î—¬?îƒ´î›™?î€¤?î“‡
-fft?ç‹¦î˜ƒ?î›™?î›ˆ??ç§–î€¤?î“‰ãƒ‘î˜…îŸŸ //fftç´‡??ç§–æƒ ç’¶î„¤ç©ï¹š?î“‡ï¹š?î€™ã‚ˆÎ‘ã®ã„£è”¨î…¥î›ƒî›–î—»î“ //fft?ç¥˜?î„µî™?î˜è‡‚?î›ƒî˜’î“‡
-î›ƒî…æƒ ç’¶32î”ï¹š? //fft?ç¥˜??ãƒ??î“‡î›ƒî…æƒ ç’¶Î¤æ‰?ï¹š? //fft?ç¥˜?î™?è‹?î“‡î›ƒî…æƒ ç’¶ï¹š?î—­???î“‡[][0]î›™î ‚?åœºî“‡
-[][1]î›™î ‚?åœº 
-s32 x[N][2] = {};  //ï¹š?*p[N]çŒ?î—¬î›ˆæî—¦Î©î‚¹?î‹ï¹ã¦î™î›€î“‡???î‚¹?î‚³é…šî”î…„î¥î‚¹îš¼?èª¹?ç§–x //p[i][0]î™”îŒî—¬î‚¹îš¼?èª¹î€™?åœºî“‡
-p[i][1]î™”îŒî—¬î‚¹îš¼?èª¹î€™?åœº 
-s32 *p[N];  //ï¹š?è‡‚?î›ƒî˜’ç—»? //è‡‚?î›ƒî˜’ç—»?î›™?î—¬wn^0,wn^1,wn^2...wn^(N/2-1)?N/2?è‹?è‡‚?î›ƒî˜’  
+#define POWER       6	//?­È¥Nªí¤F?¤J?Õu­º¥ı³Q©ñ¤jªº­¿?¡A©ñ¤j­¿??2^POWER 
+#define P_COEF      8	//?­È¥Nªí¤F±Û?¦]¤l³Q©ñ¤jªº­¿?¡A©ñ¤j­¿??2^POWER 
+#if (N == 4) #define L           2//Lªº©w??¨¬L = log2(N) 
+#elif (N == 8) #define L           3//Lªº©w??¨¬L = log2(N) 
+#elif (N == 16) #define L           4//Lªº©w??¨¬L = log2(N) 
+#elif (N == 32) #define L           5//Lªº©w??¨¬L = log2(N) 
+#elif (N == 64) #define L           6//Lªº©w??¨¬L = log2(N) 
+#elif (N == 128) #define L           7//Lªº©w??¨¬L = log2(N)
+#endif   //ADªö?¦ì??12¦ì¡A¥»¥i¥Hªö¥Îs16 x[N]©w??ÕuªÅ?¡A¦ı¬O?¤F?¬Ù¦s?ªÅ?¡A
+fft?ªG¤]?¦s?¦b??¶qªÅ?¡C¥Ñ¤_¨ü //fft¼v??¶q»İ­n­«·s©w?¡A©w?ªº¤è¦¡¤Î¨ãÊ^­ì¦]¦p¤U¡G //fft?µ{?­¼¥H?¤j±Û?¦]¤l¡A
+¦]¦¹»İ­n32¦ì©w? //fft?µ{??¥Í??¡A¦]¦¹»İ­n¦³²Å?©w? //fft?µ{?¥X?Î`?¡A¦]¦¹»İ­n©w?¤G???¡A[][0]¦s©ñ?³¡¡A
+[][1]¦s©ñ?³¡ 
+s32 x[N][2] = {};  //©w?*p[N]¬O?¤F¦b²Ä¤@¦¸«ü?ªì©l¤Æ¥H¦Z¡A???«ü?«ö·Ó¦ì­Ë§Ç«ü¦V?Õu?¶qx //p[i][0]¥Nªí¤F«ü¦V?Õuªº?³¡¡A
+p[i][1]¥Nªí¤F«ü¦V?Õuªº?³¡ 
+s32 *p[N];  //©w?±Û?¦]¤l¯x? //±Û?¦]¤l¯x?¦s?¤Fwn^0,wn^1,wn^2...wn^(N/2-1)?N/2?Î`?±Û?¦]¤l  
 									s16 w[N>>1][2] = {256,0,256,-13,255,-25,253,-38,251,-50,248,-62,245,-74,241,-86,237,-98,231,-109,226,
                   -121,220,-132,213,-142,206,-152,198,-162,190,-172,181,-181,172,-190,162,-198,152,
                   -206,142,-213,132,-220,121,-226,109,-231,98,-237,86,-241,74,-245,62,-248,50,-251,38,
@@ -1158,17 +1157,17 @@ j |= (((i >> k)&0x01)<<(L-k-1));
 
 } 
 
-																	}    // *description:è†€2fftî™Šã„§?,?ã„§??î…‚îœ›î‚¹???p?î„Ğ«?ç§–??x?ï¸½fft?è¡¡ *            î›£??ç‹¦î›™?î›ˆ??xã„ *global var:rw->x; r->p,wî“‰(rîŒãƒœ?î“‡wîŒãƒœ?î“‡rwîŒãƒœ??) 
+																	}    // *description:°ò2fft¥D¨ç?,?¨ç??­É§U«ü???p?¥ş§½?¶q??x?¦æfft?ºâ *            ¦}??ªG¦s?¦b??x¤¤ *global var:rw->x; r->p,w¡C(rªí¥Ü?¡Awªí¥Ü?¡Arwªí¥Ü??) 
 void fft2(void) {  
-u8 i;//iãƒî˜…îŒãƒœèƒ¶î¬???î€™??   
-u8 j;//îŒãƒœèƒ¶î¬ã ?ç™¬ï¹?î¥îš©î“‡èƒ¶î¬ã ?é˜î‚”?2^i   
-u8 k;//kîŒãƒœèƒ¶î¬??æ¡ˆ?ã ã‚„î¥îš©??   
-u8 gp_distance = 1;//èƒ¶î¬ã ?é˜î‚”  
-u8 temp;//tempãƒî˜…???ç¡??ç¦¯ç½®î€™î—¦î™¨,îš¶?î˜ƒîŒãƒœî—¬îš¶î—¦ç›’î¬?ã ã‚„?î€™ç¦¯ç½®  
-u8 gp_hf = 0;//???ç¡?î€™ã„??î¥?   
-u8 delta = N;//è‡‚?î›ƒî˜’î—»?ç³¤ç§–î“‡ã‚»?î—»?î‹ï¹î…???N/2î“‡îçŒî“‰î“‰    
+u8 i;//i¥Î¤_ªí¥Ü½º§Î???ªº??   
+u8 j;//ªí¥Ü½º§Î¤À?°_©l?§Ç¦C¡A½º§Î¤À?¸ó«×?2^i   
+u8 k;//kªí¥Ü½º§Î??°¸?¤À¤ä§Ç¦C??   
+u8 gp_distance = 1;//½º§Î¤À?¸ó«×  
+u8 temp;//temp¥Î¤_???«e??¶ZÖÃªº¤@¥b,¦P?¤]ªí¥Ü¤F¦P¤@ºĞ§Î?¤À¤ä?ªº¶ZÖÃ  
+u8 gp_hf = 0;//???«e?ªº¤¤??§Ç?   
+u8 delta = N;//±Û?¦]¤l¤U?¼W¶q¡A¥»?¤U?ªì©l­È???N/2¡A¦ı¬O¡C¡C    
 s16 *pw = &(w[0][0]);   
-int tp_result[2];       //ãƒî˜…??î›™î ‚è‡‚?î›ƒî˜’ãîŸ¦?ã ?î€™î„µ?    //?î—°çº?î¥îš©î ‚î˜   
+int tp_result[2];       //¥Î¤_??¦s©ñ±Û?¦]¤l©M©_?¤À?ªº­¼?    //?¤J«H?§Ç¦C©ñ¤j   
 for(i = 0; i < N; i++)  
 { 
 x[i][0] <<= POWER;      x[i][1] <<= POWER;  
@@ -1178,12 +1177,12 @@ x[i][0] <<= POWER;      x[i][1] <<= POWER;
 				for(j = 0; j < N; j+=gp_distance)     
 				{  		gp_hf = temp + j; 
 								pw = &(w[0][0]);
-				for(k = j; k < gp_hf; k++)//Ğ§Î˜î—¦??î€™â”®Î¤èƒ¶î¬?è¡¡ 
-		{  //èƒ¶î¬?è¡¡ã„î€™î—¦?è‹?î„µçŒ­?ç¥˜            
+				for(k = j; k < gp_hf; k++)//§¹¦¨¤@??ªº©Ò¦³½º§Î?ºâ 
+		{  //½º§Î?ºâ¤¤ªº¤@?Î`?­¼ªk?µ{            
 					tp_result[0] = pw[0] * (p[k+temp][0]) - pw[1] * (p[k+temp][1]);
 					tp_result[1] = pw[0] * (p[k+temp][1]) + pw[1] * (p[k+temp][0]); 
 					tp_result[0] >>= P_COEF; 
-					tp_result[1] >>= P_COEF;            //èƒ¶î¬?è¡¡ã„î€™2?è‹?î™¡çŒ­?ç¥˜            
+					tp_result[1] >>= P_COEF;            //½º§Î?ºâ¤¤ªº2?Î`?¥[ªk?µ{            
 					p[k+temp][0] = p[k][0] - tp_result[0];            
 					p[k+temp][1] = p[k][1] - tp_result[1];            
 					p[k][0] += tp_result[0];            
@@ -1586,7 +1585,7 @@ void UART_TEST_HANDLE()
 								NVIC_DisableIRQ(EINT0_IRQn);
 								printf("\t Stop measure\n");
 								}
-							}
+						}
 						}
 					
 						if (gucUartReceivePointer == 1)
@@ -1631,7 +1630,7 @@ void UART_TEST_HANDLE()
 						
 						if(gucUartReceivePointer == 4)
 						{
-							if ((u8InChar == 'R')||(u8InChar=='V')||(u8InChar=='D')||(u8InChar=='A')||(u8InChar=='C')||(u8InChar=='U')||(u8InChar=='T')||(u8InChar=='S')||(u8InChar=='K')||(u8InChar=='B')||(u8InChar=='N')||(u8InChar=='O')||(u8InChar=='I')||(u8InChar=='M')||(u8InChar=='Y')||(u8InChar=='X')) // R,T,VDAC,U,S MODE K:change unit  B:change burd rate
+							if ((u8InChar == 'R')||(u8InChar=='V')||(u8InChar=='D')||(u8InChar=='A')||(u8InChar=='C')||(u8InChar=='U')||(u8InChar=='T')||(u8InChar=='S')||(u8InChar=='K')||(u8InChar=='B')||(u8InChar=='N')||(u8InChar=='O')||(u8InChar=='I')) // R,T,VDAC,U,S MODE K:change unit  B:change burd rate
 								{
 										g_u8RecData[gucUartReceivePointer] = u8InChar;
 										gucUartCommandType = u8InChar;
@@ -1644,7 +1643,7 @@ void UART_TEST_HANDLE()
 						}
 						if(gucUartReceivePointer == 5)
 						{
-								if((gucUartCommandType == 'R') ||(gucUartCommandType == 'U')||(gucUartCommandType == 'S')||(gucUartCommandType=='K')||(gucUartCommandType=='B')||(gucUartCommandType=='N')||(gucUartCommandType=='O')||(gucUartCommandType=='I')||(gucUartCommandType=='M')||(gucUartCommandType=='Y')||(gucUartCommandType=='X'))
+								if((gucUartCommandType == 'R') ||(gucUartCommandType == 'U')||(gucUartCommandType == 'S')||(gucUartCommandType=='K')||(gucUartCommandType=='B')||(gucUartCommandType=='N')||(gucUartCommandType=='O')||(gucUartCommandType=='I'))
 								{
 									if (u8InChar == 'E') // stop code
 									{
@@ -1687,33 +1686,11 @@ void UART_TEST_HANDLE()
 										{
 											 printf("\n+-------------------------------------------------+\n");
 											printf("|Welcome To Geotech Science|\n");
-											printf("|This is The Device : Minilogger_4Channel|\n");
+											printf("|This is The Device : Minilogger_16Channel|\n");
 											printf("|The Firmware Version:mini_17.09.v3|\n");//20170429-v17.05.1
 											printf("+-------------------------------------------------+\n\n");
 										}
-										else if(g_u8CommandData[4] =='M')//Monitor Enable
-										{
-											monitor_enable^=1;
-											if(monitor_enable)
-												printf("\tMonitor Enable\n");
-											else{
-														printf("\tMonitor Disable\n");
-											}
-											
-										}
-										else if(g_u8CommandData[4] =='Y')//Memory RESET
-										{
-											save_eeprom_counter=1;
-											printf("Reset Memory Done");
-											Transfer_SAVE_COUNT_ADCII();
-											write_save_eeprom_address();	
-											
-										}
-										else if(g_u8CommandData[4] =='X')//Display next time scan
-										{
-											g_uEint0_Scan_Event_Flag=1;
-											
-										}
+										
 										//printf("#OKE");
 										//printf("%s\n",g_u8RecData);
 										gucUartReceivePointer = 80;
@@ -1790,20 +1767,6 @@ void UART_TEST_HANDLE()
         {
             /* Get the character from UART Buffer */
             u8InChar = UART_READ(UART0);
-					if(u8InChar==0x0D)
-							{
-								wakeup^=1;
-								if(wakeup)
-								{	
-								printf("\tCommand Enable\n");	
-									//wake_count=1;
-							}
-								else{
-							//	gucUartReceivePointer=0;		
-									//wake_count=0;
-								printf("\tCommand Disable\n");
-								}
-							}
 						//printf("%c",u8InChar);
 						//NVIC_DisableIRQ(EINT0_IRQn);
 						if (gucUartReceivePointer > 30) // max command set length is 30 bytes 
@@ -1815,19 +1778,7 @@ void UART_TEST_HANDLE()
 						{
 								gucUartReceivePointer = 0;
 								g_u8RecData[gucUartReceivePointer] = u8InChar;
-							if(wakeup!=1)
-							{
-									wake_count^=1;
-									
-								if(wake_count){
-								NVIC_EnableIRQ(EINT0_IRQn);
-								printf("\t measure\n");
-								}else{
 								NVIC_DisableIRQ(EINT0_IRQn);
-								printf("\t Stop measure\n");
-								}
-							}
-								//NVIC_DisableIRQ(EINT0_IRQn);
 						}
 					
 						if (gucUartReceivePointer == 1)
@@ -1869,85 +1820,44 @@ void UART_TEST_HANDLE()
 						
 						if(gucUartReceivePointer == 4)
 						{
-							if ((u8InChar == 'R')||(u8InChar=='V')||(u8InChar=='D')||(u8InChar=='A')||(u8InChar=='C')||(u8InChar=='U')||(u8InChar=='T')||(u8InChar=='S')||(u8InChar=='K')||(u8InChar=='B')||(u8InChar=='N')||(u8InChar=='O')||(u8InChar=='I')) // R,T,VDAC,U,S MODE K:change unit  B:change burd rate
+								if ((u8InChar == 'R')||(u8InChar=='V')||(u8InChar=='D')||(u8InChar=='A')||(u8InChar=='C')||(u8InChar=='U')||(u8InChar=='T')||(u8InChar=='S')) // R,T,VDAC,U,S MODE
 								{
 										g_u8RecData[gucUartReceivePointer] = u8InChar;
 										gucUartCommandType = u8InChar;
 								}else
 								{
-										gucUartReceivePointer = 50; // unknow command, restart command protocol
+										gucUartReceivePointer = 60; // unknow command, restart command protocol
 									printf("ERROR\n");
 									NVIC_EnableIRQ(EINT0_IRQn);	
 								}
 						}
 						if(gucUartReceivePointer == 5)
 						{
-								if((gucUartCommandType == 'R') ||(gucUartCommandType == 'U')||(gucUartCommandType == 'S')||(gucUartCommandType=='K')||(gucUartCommandType=='B')||(gucUartCommandType=='N')||(gucUartCommandType=='O')||(gucUartCommandType=='I'))
+								if((gucUartCommandType == 'R') ||(gucUartCommandType == 'U')||(gucUartCommandType == 'S'))
 								{
 									if (u8InChar == 'E') // stop code
 									{
 										g_u8RecData[gucUartReceivePointer] = u8InChar;
 										g_u8RecData[gucUartReceivePointer+1] = 0x00;
-										wakeup=0;
+										//
 										gucUartCommandSucceed = 1;
 										COPY_UART_COMMAND_DATA();
 										if(g_u8CommandData[4] == 'S'){
 												SYS_UnlockReg();
 												SYS_ResetCPU();
 										}
-										else if(g_u8CommandData[4] =='K')//0:HZ,1:DG,2:coef
-										{
-											unit_counter++;
-											if(unit_counter>3)unit_counter=0;
-										}
-										else if(g_u8CommandData[4] =='B')//1:9600,2:19200,3:38400,4:115200:
-										{
-											BR_count++;
-											if(BR_count>4)BR_count=1;
-											SYS_UnlockReg();
-											UART0_Init();
-											SYS_LockReg();	
-											
-										}
-											else if(g_u8CommandData[4] =='N')//Now meassure
-										{
-											g_uEint0_Scan_Event_Flag=1;
-											
-										}
-										else if(g_u8CommandData[4] =='O')//Real Time output 
-										{
-											
-											Read_RTC_Data();
-											Transfer_RTC_To_ADCII();	
-											printf("Device Real Time:%s\n",union_One_Measured_Data.data.RTC_DATA);	
-										}
-										else if(g_u8CommandData[4] =='I')//Information
-										{
-											 printf("\n+-------------------------------------------------+\n");
-											printf("|Welcome To Geotech Science|\n");
-											printf("|This is The Device : Minilogger_16Channel|\n");
-											printf("|The Firmware Version:mini_17.09.v3|\n");//20170429-v17.05.1
-											printf("+-------------------------------------------------+\n\n");
-										}
-										
 										//printf("#OKE");
 										//printf("%s\n",g_u8RecData);
-										gucUartReceivePointer = 50;
-										
+										gucUartReceivePointer = 100;
 										gucUartCommandType = 0x00;
 									}else
 									{
-										gucUartReceivePointer = 50; // unknow command, restart command protocol
+										gucUartReceivePointer = 70; // unknow command, restart command protocol
 										NVIC_EnableIRQ(EINT0_IRQn);	
 									}
-								}else if((u8InChar >='0') && (u8InChar <= '9')) // add other command set here below 
+								}else // add other command set here below 
 								{
 										g_u8RecData[gucUartReceivePointer] = u8InChar;
-								}
-								else
-								{
-										gucUartReceivePointer = 50; // unknow command, restart command protocol
-										NVIC_EnableIRQ(EINT0_IRQn);	
 								}
 						}
 						if ((gucUartReceivePointer >= 6)&&(gucUartReceivePointer<27))
@@ -1973,7 +1883,7 @@ void UART_TEST_HANDLE()
 										//
 										gucUartCommandSucceed = 1;
 										COPY_UART_COMMAND_DATA();
-										gucUartReceivePointer = 80;
+										gucUartReceivePointer = 100;
 										gucUartCommandType = 0x00;
 										printf("\t Com_UART_OK\n");
 									}else
@@ -1984,7 +1894,6 @@ void UART_TEST_HANDLE()
 									}
 						}
 						// increase pointer
-						if(wakeup)
 						gucUartReceivePointer++;
         }
     }
@@ -3447,7 +3356,6 @@ switch(unit_counter)
 									Read_RTC_Data();
 									Transfer_RTC_To_ADCII();	
 									//I2C_WriteData(0xD0, 0x0000, RTC_register_map.RTC_Reg_string, 8);
-			if(monitor_enable)
 									printf("\n%s-Real_Time_Data\t\n\n,DC_IN=%2.1f V,Temp=%2.1f deg\n",union_One_Measured_Data.Data_string,DC_12V_AD_data,thermal_AD_data);	
 						delay_time(1000);	
 						//---------------------------------------------
